@@ -1,0 +1,71 @@
+export const newsData = [
+  {
+    id: "1",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+  {
+    id: "2",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+  {
+    id: "3",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+  {
+    id: "4",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+  {
+    id: "5",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+  {
+    id: "6",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+  {
+    id: "7",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+  {
+    id: "8",
+    title: "Заголовок новини",
+    date: "Дата новини",
+    summary: "Короткий текст новини",
+    image: "https://via.placeholder.com/80",
+  },
+];
+
+export const galleryData = [
+  { id: "1", image: "https://via.placeholder.com/150" },
+  { id: "2", image: "https://via.placeholder.com/150" },
+  { id: "3", image: "https://via.placeholder.com/150" },
+  { id: "4", image: "https://via.placeholder.com/150" },
+  { id: "5", image: "https://via.placeholder.com/150" },
+  { id: "6", image: "https://via.placeholder.com/150" },
+  { id: "7", image: "https://via.placeholder.com/150" },
+  { id: "8", image: "https://via.placeholder.com/150" },
+  { id: "9", image: "https://via.placeholder.com/150" },
+  { id: "10", image: "https://via.placeholder.com/150" },
+];
