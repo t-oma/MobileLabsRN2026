@@ -5,7 +5,7 @@ export default function Header() {
   return (
     <View style={styles.header}>
       <Image
-        source={require("../../assets/uni-logo.png")}
+        source={require("../../assets/uni-logo.webp")}
         style={styles.logo}
         resizeMode="contain"
       />
