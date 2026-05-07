@@ -1,6 +1,24 @@
 {
-  "extends": "expo/tsconfig.base",
-  "compilerOptions": {
-    "strict": true
-  }
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+        "strict": true,
+        "forceConsistentCasingInFileNames": true,
+        /* Must have */
+        "noUnusedLocals": true,
+        "noUnusedParameters": true,
+        "allowUnusedLabels": false,
+        "noUncheckedSideEffectImports": true,
+        "noFallthroughCasesInSwitch": true,
+        "allowUnreachableCode": false,
+        /* Good to have */
+        "noUncheckedIndexedAccess": true,
+        "erasableSyntaxOnly": true,
+        /*  */
+        "noImplicitOverride": true,
+        "paths": {
+            "@/*": [
+                "./src/*"
+            ]
+        }
+    }
 }
