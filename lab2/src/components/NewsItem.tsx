@@ -1,20 +1,26 @@
 import { memo } from "react";
-import { View, Text, Image, StyleSheet } from "react-native";
+import { View, Text, Image, StyleSheet, Pressable } from "react-native";
 import { NewsItem } from "@/data/newsData";
 
 type Props = {
   item: NewsItem;
+  onPress: (item: NewsItem) => void;
 };
 
-function NewsItemCard({ item }: Props) {
+function NewsItemCard({ item, onPress }: Props) {
   return (
-    <View style={styles.container}>
-      <Image source={{ uri: item.image }} style={styles.image} />
-      <View style={styles.content}>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.description}>{item.description}</Text>
+    <Pressable
+      onPress={() => onPress(item)}
+      style={({ pressed }) => [{ opacity: pressed ? 0.9 : 1 }]}
+    >
+      <View style={styles.container}>
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <View style={styles.content}>
+          <Text style={styles.title}>{item.title}</Text>
+          <Text style={styles.description}>{item.description}</Text>
+        </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
