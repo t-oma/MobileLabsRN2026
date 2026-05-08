@@ -7,6 +7,7 @@ import {
   RefreshControl,
   ActivityIndicator,
 } from "react-native";
+import { StackScreenProps } from "@react-navigation/stack";
 import {
   NewsItem,
   INITIAL_NEWS,
@@ -14,8 +15,12 @@ import {
   refreshNews,
 } from "@/data/newsData";
 import NewsItemCard from "@/components/NewsItem";
+import { RootStackParamList } from "@/navigation/AppNavigator";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-function NewsListScreen() {
+type Props = StackScreenProps<RootStackParamList, "Main">;
+
+function NewsListScreen({ navigation }: Props) {
   const [data, setData] = useState<NewsItem[]>(INITIAL_NEWS);
   const [refreshing, setRefreshing] = useState(false);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -30,14 +35,25 @@ function NewsListScreen() {
   const onEndReached = useCallback(async () => {
     if (loadingMore || refreshing) return;
     setLoadingMore(true);
+
     const newItems = await fetchMoreNews(data.length);
     setData((prev) => [...prev, ...newItems]);
     setLoadingMore(false);
   }, [data.length, loadingMore, refreshing]);
 
-  const renderItem = useCallback(({ item }: { item: NewsItem }) => {
-    return <NewsItemCard item={item} />;
-  }, []);
+  const handlePress = useCallback(
+    (item: NewsItem) => {
+      navigation.navigate("Details", { item });
+    },
+    [navigation],
+  );
+
+  const renderItem = useCallback(
+    ({ item }: { item: NewsItem }) => {
+      return <NewsItemCard item={item} onPress={handlePress} />;
+    },
+    [handlePress],
+  );
 
   const keyExtractor = useCallback((item: NewsItem) => item.id, []);
 
@@ -54,6 +70,7 @@ function NewsListScreen() {
 
   const ListFooterComponent = useCallback(() => {
     if (!loadingMore) return null;
+
     return (
       <View style={styles.footer}>
         <ActivityIndicator size="large" color="#007AFF" />
@@ -67,27 +84,27 @@ function NewsListScreen() {
   }, []);
 
   return (
-    <FlatList
-      data={data}
-      renderItem={renderItem}
-      keyExtractor={keyExtractor}
-      contentContainerStyle={styles.listContent}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }
-      onEndReached={onEndReached}
-      onEndReachedThreshold={0.5}
-      ListHeaderComponent={ListHeaderComponent}
-      ListFooterComponent={ListFooterComponent}
-      ItemSeparatorComponent={ItemSeparatorComponent}
-      initialNumToRender={8}
-      maxToRenderPerBatch={5}
-      windowSize={11}
-      removeClippedSubviews={true}
-    />
+    <SafeAreaView style={{ flex: 1 }} edges={["bottom"]}>
+      <FlatList
+        data={data}
+        renderItem={renderItem}
+        keyExtractor={keyExtractor}
+        contentContainerStyle={styles.listContent}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        onEndReached={onEndReached}
+        onEndReachedThreshold={0.5}
+        ListHeaderComponent={ListHeaderComponent}
+        ListFooterComponent={ListFooterComponent}
+        ItemSeparatorComponent={ItemSeparatorComponent}
+        initialNumToRender={8}
+        maxToRenderPerBatch={5}
+        windowSize={11}
+      />
+    </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   listContent: {
     paddingVertical: 16,
@@ -123,5 +140,4 @@ const styles = StyleSheet.create({
     height: 16,
   },
 });
-
 export default NewsListScreen;
