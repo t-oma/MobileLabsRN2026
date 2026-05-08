@@ -8,6 +8,7 @@ import { Pressable, Text } from "react-native";
 import NewsListScreen from "@/screens/NewsListScreen";
 import NewsDetailScreen from "@/screens/NewsDetailScreen";
 import ContactsScreen from "@/screens/ContactsScreen";
+import CustomDrawerContent from "@/components/CustomDrawerContent";
 import { NewsItem } from "@/data/newsData";
 
 export type RootStackParamList = {
@@ -59,6 +60,7 @@ function NewsStackNavigator() {
 export default function AppNavigator() {
   return (
     <Drawer.Navigator
+      drawerContent={(props) => <CustomDrawerContent {...props} />}
       screenOptions={{
         headerShown: false,
       }}
