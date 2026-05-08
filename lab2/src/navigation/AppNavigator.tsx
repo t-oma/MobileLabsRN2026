@@ -7,6 +7,7 @@ import { useNavigation } from "@react-navigation/native";
 import { Pressable, Text } from "react-native";
 import NewsListScreen from "@/screens/NewsListScreen";
 import NewsDetailScreen from "@/screens/NewsDetailScreen";
+import ContactsScreen from "@/screens/ContactsScreen";
 import { NewsItem } from "@/data/newsData";
 
 export type RootStackParamList = {
@@ -16,6 +17,7 @@ export type RootStackParamList = {
 
 export type DrawerParamList = {
   NewsStack: undefined;
+  Contacts: undefined;
 };
 
 const Stack = createStackNavigator<RootStackParamList>();
@@ -65,6 +67,11 @@ export default function AppNavigator() {
         name="NewsStack"
         component={NewsStackNavigator}
         options={{ title: "Новини" }}
+      />
+      <Drawer.Screen
+        name="Contacts"
+        component={ContactsScreen}
+        options={{ title: "Контакти" }}
       />
     </Drawer.Navigator>
   );
