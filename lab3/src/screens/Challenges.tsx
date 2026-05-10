@@ -1,17 +1,11 @@
 import styled from "styled-components/native";
-import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/context/ThemeContext";
 import { useGame } from "@/context/GameContext";
-
-const Container = styled.View<{ bg: string }>`
-  flex: 1;
-  background-color: ${(props) => props.bg};
-`;
-
-const Content = styled.ScrollView`
-  flex: 1;
-  padding: 20px;
-`;
+import { ScreenContainer } from "@/components/layout/ScreenContainer";
+import { ScreenContent } from "@/components/layout/ScreenContent";
+import { IconCircle } from "@/components/ui/IconCircle";
+import { Checkbox } from "@/components/ui/Checkbox";
+import { ProgressBar } from "@/components/ui/ProgressBar";
 
 const TaskCard = styled.View<{
   bg: string;
@@ -29,16 +23,7 @@ const TaskCard = styled.View<{
 const TaskHeader = styled.View`
   flex-direction: row;
   align-items: center;
-`;
-
-const IconCircle = styled.View<{ bg: string }>`
-  width: 40px;
-  height: 40px;
-  border-radius: 20px;
-  background-color: ${(props) => props.bg};
-  align-items: center;
-  justify-content: center;
-  margin-right: 12px;
+  margin-bottom: 16px;
 `;
 
 const TaskTextBlock = styled.View`
@@ -55,44 +40,6 @@ const TaskDesc = styled.Text<{ color: string }>`
   font-size: 13px;
   color: ${(props) => props.color};
   margin-top: 2px;
-`;
-
-const Checkbox = styled.View<{
-  completed: boolean;
-  border: string;
-  bg: string;
-}>`
-  width: 28px;
-  height: 28px;
-  border-radius: 14px;
-  border-width: 2px;
-  border-color: ${(props) => (props.completed ? props.bg : props.border)};
-  background-color: ${(props) => (props.completed ? props.bg : "transparent")};
-  align-items: center;
-  justify-content: center;
-`;
-
-const ProgressTrack = styled.View<{ bg: string }>`
-  height: 6px;
-  background-color: ${(props) => props.bg};
-  border-radius: 3px;
-  margin-top: 12px;
-  overflow: hidden;
-`;
-
-const ProgressFill = styled.View<{ bg: string; fill: number }>`
-  height: 6px;
-  background-color: ${(props) => props.bg};
-  border-radius: 3px;
-  width: ${(props) => `${Math.min(props.fill * 100, 100)}%`};
-`;
-
-const ProgressLabel = styled.Text<{ color: string }>`
-  font-size: 12px;
-  font-weight: 600;
-  color: ${(props) => props.color};
-  margin-top: 6px;
-  text-align: right;
 `;
 
 const tasksMeta = [
@@ -113,11 +60,10 @@ export default function ChallengesScreen() {
   const { tasks } = useGame();
 
   return (
-    <Container bg={theme.colors.background}>
-      <Content showsVerticalScrollIndicator={false}>
+    <ScreenContainer bg={theme.colors.background}>
+      <ScreenContent>
         {tasks.map((task, index) => {
           const meta = tasksMeta[index];
-          const progress = task.target > 0 ? task.current / task.target : 0;
 
           return (
             <TaskCard
@@ -127,40 +73,24 @@ export default function ChallengesScreen() {
               completed={task.completed}
             >
               <TaskHeader>
-                <IconCircle bg={`${meta.color}20`}>
-                  <Ionicons name={meta.icon} size={20} color={meta.color} />
-                </IconCircle>
+                <IconCircle icon={meta.icon} color={meta.color} />
                 <TaskTextBlock>
                   <TaskTitle color={theme.colors.text}>{task.title}</TaskTitle>
                   <TaskDesc color={theme.colors.textSecondary}>
                     {task.description}
                   </TaskDesc>
                 </TaskTextBlock>
-                <Checkbox
-                  completed={task.completed}
-                  border={theme.colors.border}
-                  bg={theme.colors.success}
-                >
-                  {task.completed && (
-                    <Ionicons name="checkmark" size={16} color="#FFFFFF" />
-                  )}
-                </Checkbox>
+                <Checkbox completed={task.completed} />
               </TaskHeader>
-              <ProgressTrack bg={theme.colors.overlay}>
-                <ProgressFill
-                  bg={
-                    task.completed ? theme.colors.success : theme.colors.primary
-                  }
-                  fill={progress}
-                />
-              </ProgressTrack>
-              <ProgressLabel color={theme.colors.textSecondary}>
-                {task.current}/{task.target}
-              </ProgressLabel>
+              <ProgressBar
+                current={task.current}
+                target={task.target}
+                completed={task.completed}
+              />
             </TaskCard>
           );
         })}
-      </Content>
-    </Container>
+      </ScreenContent>
+    </ScreenContainer>
   );
 }

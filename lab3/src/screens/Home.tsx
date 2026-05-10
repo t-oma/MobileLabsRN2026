@@ -14,18 +14,11 @@ import Animated, {
 import { useTheme } from "@/context/ThemeContext";
 import { useGame } from "@/context/GameContext";
 import { scheduleOnRN } from "react-native-worklets";
+import { ScreenContainer } from "@/components/layout/ScreenContainer";
+import { ScreenContent } from "@/components/layout/ScreenContent";
+import { Card } from "@/components/ui/Card";
 
 const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
-
-const Container = styled.View<{ bg: string }>`
-  flex: 1;
-  background-color: ${(props) => props.bg};
-`;
-
-const Content = styled.ScrollView`
-  flex: 1;
-  padding: 20px;
-`;
 
 const ScoreCard = styled.View<{ bg: string; border: string }>`
   background-color: ${(props) => props.bg};
@@ -71,13 +64,6 @@ const CircleText = styled.Text`
   font-size: 18px;
   font-weight: 700;
   margin-top: 8px;
-`;
-
-const ReadmeCard = styled.View<{ bg: string; border: string }>`
-  background-color: ${(props) => props.bg};
-  border-radius: 24px;
-  padding: 20px;
-  border: 1px solid ${(props) => props.border};
 `;
 
 const ReadmeItem = styled.View`
@@ -155,11 +141,6 @@ export default function HomeScreen() {
     ],
   }));
 
-  const resetPosition = () => {
-    translateX.value = withSpring(0);
-    translateY.value = withSpring(0);
-  };
-
   const tap = Gesture.Tap().onEnd(() => {
     scheduleOnRN(onTap);
   });
@@ -234,8 +215,8 @@ export default function HomeScreen() {
   );
 
   return (
-    <Container bg={theme.colors.background}>
-      <Content showsVerticalScrollIndicator={false}>
+    <ScreenContainer bg={theme.colors.background}>
+      <ScreenContent>
         <ScoreCard bg={theme.colors.card} border={theme.colors.border}>
           <ScoreLabel color={theme.colors.textSecondary}>Score</ScoreLabel>
           <ScoreValue color={theme.colors.primary}>{score}</ScoreValue>
@@ -248,7 +229,7 @@ export default function HomeScreen() {
           </CircleButton>
         </GestureDetector>
 
-        <ReadmeCard bg={theme.colors.card} border={theme.colors.border}>
+        <Card bg={theme.colors.card} border={theme.colors.border}>
           {hints.map((hint, index) => (
             <ReadmeItem key={index}>
               <Ionicons name={hint.icon} size={22} color={hint.color} />
@@ -258,8 +239,8 @@ export default function HomeScreen() {
           <ReadmeHint color={theme.colors.textSecondary}>
             Перетягуй, масштабуй та свайпай об’єкт для бонусів!
           </ReadmeHint>
-        </ReadmeCard>
-      </Content>
-    </Container>
+        </Card>
+      </ScreenContent>
+    </ScreenContainer>
   );
 }

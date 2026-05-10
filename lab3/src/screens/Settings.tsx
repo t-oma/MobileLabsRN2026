@@ -3,33 +3,10 @@ import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import { useTheme } from "@/context/ThemeContext";
 import { useGame } from "@/context/GameContext";
-
-const Container = styled.View<{ bg: string }>`
-  flex: 1;
-  background-color: ${(props) => props.bg};
-`;
-
-const Content = styled.ScrollView`
-  flex: 1;
-  padding: 20px;
-`;
-
-const Section = styled.View<{ bg: string; border: string }>`
-  background-color: ${(props) => props.bg};
-  border-radius: 20px;
-  padding: 20px;
-  margin-bottom: 20px;
-  border: 1px solid ${(props) => props.border};
-`;
-
-const SectionTitle = styled.Text<{ color: string }>`
-  font-size: 13px;
-  font-weight: 700;
-  color: ${(props) => props.color};
-  text-transform: uppercase;
-  letter-spacing: 1px;
-  margin-bottom: 16px;
-`;
+import { ScreenContainer } from "@/components/layout/ScreenContainer";
+import { ScreenContent } from "@/components/layout/ScreenContent";
+import { Card } from "@/components/ui/Card";
+import { SectionTitle } from "@/components/ui/SectionTitle";
 
 const ThemeRow = styled.View`
   flex-direction: row;
@@ -109,83 +86,58 @@ export default function SettingsScreen() {
     );
   };
 
+  const themeOptions = [
+    { text: "Світла", value: "light", icon: "sunny-outline" },
+    { text: "Темна", value: "dark", icon: "moon-outline" },
+    { text: "Системна", value: "system", icon: "phone-portrait-outline" },
+  ] as const;
+
+  const aboutRows = [
+    { icon: "information-circle-outline", text: "Gesture Clicker v1.0" },
+    { icon: "code-slash-outline", text: "Лабораторна робота з React Native" },
+    { icon: "code-slash-outline", text: "Левченко Артем, ІПЗ-23-3" },
+  ] as const;
+
   return (
-    <Container bg={theme.colors.background}>
-      <Content showsVerticalScrollIndicator={false}>
-        <Section bg={theme.colors.card} border={theme.colors.border}>
+    <ScreenContainer bg={theme.colors.background}>
+      <ScreenContent>
+        <Card bg={theme.colors.card} border={theme.colors.border}>
           <SectionTitle color={theme.colors.textSecondary}>
             Тема оформлення
           </SectionTitle>
+
           <ThemeRow>
-            <ThemeButton
-              active={mode === "light"}
-              activeBg={theme.colors.primary}
-              inactiveBg={theme.colors.overlay}
-              border={theme.colors.border}
-              onPress={() => setMode("light")}
-            >
-              <Ionicons
-                name="sunny-outline"
-                size={18}
-                color={mode === "light" ? "#FFFFFF" : theme.colors.text}
-              />
-              <ThemeButtonText
-                active={mode === "light"}
-                activeColor="#FFFFFF"
-                inactiveColor={theme.colors.text}
+            {themeOptions.map(({ text, value, icon }) => (
+              <ThemeButton
+                key={value}
+                active={mode === value}
+                activeBg={theme.colors.primary}
+                inactiveBg={theme.colors.overlay}
+                border={theme.colors.border}
+                onPress={() => setMode(value)}
               >
-                Світла
-              </ThemeButtonText>
-            </ThemeButton>
-
-            <ThemeButton
-              active={mode === "dark"}
-              activeBg={theme.colors.primary}
-              inactiveBg={theme.colors.overlay}
-              border={theme.colors.border}
-              onPress={() => setMode("dark")}
-            >
-              <Ionicons
-                name="moon-outline"
-                size={18}
-                color={mode === "dark" ? "#FFFFFF" : theme.colors.text}
-              />
-              <ThemeButtonText
-                active={mode === "dark"}
-                activeColor="#FFFFFF"
-                inactiveColor={theme.colors.text}
-              >
-                Темна
-              </ThemeButtonText>
-            </ThemeButton>
-
-            <ThemeButton
-              active={mode === "system"}
-              activeBg={theme.colors.primary}
-              inactiveBg={theme.colors.overlay}
-              border={theme.colors.border}
-              onPress={() => setMode("system")}
-            >
-              <Ionicons
-                name="phone-portrait-outline"
-                size={18}
-                color={mode === "system" ? "#FFFFFF" : theme.colors.text}
-              />
-              <ThemeButtonText
-                active={mode === "system"}
-                activeColor="#FFFFFF"
-                inactiveColor={theme.colors.text}
-              >
-                Системна
-              </ThemeButtonText>
-            </ThemeButton>
+                <Ionicons
+                  name={icon}
+                  size={18}
+                  color={mode === value ? "#FFFFFF" : theme.colors.text}
+                />
+                <ThemeButtonText
+                  active={mode === value}
+                  activeColor="#FFFFFF"
+                  inactiveColor={theme.colors.text}
+                >
+                  {text}
+                </ThemeButtonText>
+              </ThemeButton>
+            ))}
           </ThemeRow>
-        </Section>
+        </Card>
 
-        <Section bg={theme.colors.card} border={theme.colors.border}>
+        <Card bg={theme.colors.card} border={theme.colors.border}>
           <SectionTitle color={theme.colors.textSecondary}>
             Прогрес
           </SectionTitle>
+
           <InfoRow>
             <Ionicons
               name="trophy-outline"
@@ -196,48 +148,30 @@ export default function SettingsScreen() {
               Поточний рахунок: {score} очок
             </InfoText>
           </InfoRow>
+
           <ResetButton bg={theme.colors.danger} onPress={handleReset}>
             <Ionicons name="refresh-outline" size={20} color="#FFFFFF" />
             <ResetButtonText>Скинути прогрес</ResetButtonText>
           </ResetButton>
-        </Section>
+        </Card>
 
-        <Section bg={theme.colors.card} border={theme.colors.border}>
+        <Card bg={theme.colors.card} border={theme.colors.border}>
           <SectionTitle color={theme.colors.textSecondary}>
             Про додаток
           </SectionTitle>
-          <InfoRow>
-            <Ionicons
-              name="information-circle-outline"
-              size={20}
-              color={theme.colors.textSecondary}
-            />
-            <InfoText color={theme.colors.textSecondary}>
-              Gesture Clicker v1.0
-            </InfoText>
-          </InfoRow>
-          <InfoRow>
-            <Ionicons
-              name="code-slash-outline"
-              size={20}
-              color={theme.colors.textSecondary}
-            />
-            <InfoText color={theme.colors.textSecondary}>
-              Лабораторна робота з React Native
-            </InfoText>
-          </InfoRow>
-          <InfoRow>
-            <Ionicons
-              name="code-slash-outline"
-              size={20}
-              color={theme.colors.textSecondary}
-            />
-            <InfoText color={theme.colors.textSecondary}>
-              Левченко Артем, ІПЗ-23-3
-            </InfoText>
-          </InfoRow>
-        </Section>
-      </Content>
-    </Container>
+
+          {aboutRows.map(({ icon, text }, index) => (
+            <InfoRow key={index}>
+              <Ionicons
+                name={icon}
+                size={20}
+                color={theme.colors.textSecondary}
+              />
+              <InfoText color={theme.colors.textSecondary}>{text}</InfoText>
+            </InfoRow>
+          ))}
+        </Card>
+      </ScreenContent>
+    </ScreenContainer>
   );
 }
