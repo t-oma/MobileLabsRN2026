@@ -73,7 +73,7 @@ const InfoText = styled.Text<{ color: string }>`
 
 export default function SettingsScreen() {
   const { theme, mode, setMode } = useTheme();
-  const { reset, score } = useGame();
+  const { score, actions } = useGame();
 
   const handleReset = () => {
     Alert.alert(
@@ -81,7 +81,7 @@ export default function SettingsScreen() {
       "Це обнулить рахунок та всі виконані завдання.",
       [
         { text: "Скасувати", style: "cancel" },
-        { text: "Скинути", style: "destructive", onPress: reset },
+        { text: "Скинути", style: "destructive", onPress: actions.reset },
       ],
     );
   };

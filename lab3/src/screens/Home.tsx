@@ -1,24 +1,13 @@
-import { Dimensions } from "react-native";
 import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
-import {
-  Gesture,
-  GestureDetector,
-  Directions,
-} from "react-native-gesture-handler";
-import Animated, {
-  useSharedValue,
-  useAnimatedStyle,
-  withSpring,
-} from "react-native-reanimated";
+import { GestureDetector } from "react-native-gesture-handler";
+import Animated from "react-native-reanimated";
 import { useTheme } from "@/context/ThemeContext";
 import { useGame } from "@/context/GameContext";
-import { scheduleOnRN } from "react-native-worklets";
+import { useClickerGestures } from "@/hooks/useClickerGestures";
 import { ScreenContainer } from "@/components/layout/ScreenContainer";
 import { ScreenContent } from "@/components/layout/ScreenContent";
 import { Card } from "@/components/ui/Card";
-
-const { width: SCREEN_W, height: SCREEN_H } = Dimensions.get("window");
 
 const ScoreCard = styled.View<{ bg: string; border: string }>`
   background-color: ${(props) => props.bg};
@@ -117,102 +106,9 @@ const hints = [
 
 export default function HomeScreen() {
   const { theme } = useTheme();
-  const {
-    score,
-    onTap,
-    onDoubleTap,
-    onLongPress,
-    onDrag,
-    onSwipeRight,
-    onSwipeLeft,
-    onPinch,
-  } = useGame();
+  const { score, actions } = useGame();
 
-  const translateX = useSharedValue(0);
-  const translateY = useSharedValue(0);
-  const scale = useSharedValue(1);
-  const savedScale = useSharedValue(1);
-
-  const animatedStyle = useAnimatedStyle(() => ({
-    transform: [
-      { translateX: translateX.value },
-      { translateY: translateY.value },
-      { scale: scale.value },
-    ],
-  }));
-
-  const tap = Gesture.Tap().onEnd(() => {
-    scheduleOnRN(onTap);
-  });
-
-  const doubleTap = Gesture.Tap()
-    .numberOfTaps(2)
-    .onEnd(() => {
-      scheduleOnRN(onDoubleTap);
-    });
-
-  const longPress = Gesture.LongPress()
-    .minDuration(3000)
-    .onStart(() => {
-      scheduleOnRN(onLongPress);
-    });
-
-  const pan = Gesture.Pan()
-    .onChange((event) => {
-      translateX.value += event.changeX;
-      translateY.value += event.changeY;
-    })
-    .onEnd(() => {
-      scheduleOnRN(onDrag);
-      const maxX = SCREEN_W / 2 - 80;
-      const maxY = SCREEN_H / 2 - 120;
-      if (translateX.value < -maxX) translateX.value = withSpring(-maxX);
-      if (translateX.value > maxX) translateX.value = withSpring(maxX);
-      if (translateY.value < -maxY) translateY.value = withSpring(-maxY);
-      if (translateY.value > maxY) translateY.value = withSpring(maxY);
-    })
-    .onFinalize(() => {
-      translateX.value = withSpring(0);
-      translateY.value = withSpring(0);
-    });
-
-  const flingRight = Gesture.Fling()
-    .direction(Directions.RIGHT)
-    .onEnd(() => {
-      scheduleOnRN(onSwipeRight);
-    });
-
-  const flingLeft = Gesture.Fling()
-    .direction(Directions.LEFT)
-    .onEnd(() => {
-      scheduleOnRN(onSwipeLeft);
-    });
-
-  const pinch = Gesture.Pinch()
-    .onChange((event) => {
-      scale.value = savedScale.value * event.scale;
-    })
-    .onEnd(() => {
-      savedScale.value = scale.value;
-      scheduleOnRN(onPinch);
-
-      if (scale.value < 0.6) {
-        scale.value = withSpring(0.6);
-        savedScale.value = 0.6;
-      } else if (scale.value > 2.5) {
-        scale.value = withSpring(2.5);
-        savedScale.value = 2.5;
-      }
-    });
-
-  const gesture = Gesture.Simultaneous(
-    Gesture.Exclusive(doubleTap, tap),
-    longPress,
-    pan,
-    flingRight,
-    flingLeft,
-    pinch,
-  );
+  const { gesture, animatedStyle } = useClickerGestures(actions);
 
   return (
     <ScreenContainer bg={theme.colors.background}>

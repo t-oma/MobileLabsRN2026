@@ -32,14 +32,16 @@ type GameState = {
 
 type GameContextType = GameState & {
   tasks: Task[];
-  onTap: () => void;
-  onDoubleTap: () => void;
-  onLongPress: () => void;
-  onDrag: () => void;
-  onSwipeRight: () => void;
-  onSwipeLeft: () => void;
-  onPinch: () => void;
-  reset: () => void;
+  actions: {
+    onTap: () => void;
+    onDoubleTap: () => void;
+    onLongPress: () => void;
+    onDrag: () => void;
+    onSwipeRight: () => void;
+    onSwipeLeft: () => void;
+    onPinch: () => void;
+    reset: () => void;
+  };
 };
 
 const initialState: GameState = {
@@ -57,14 +59,16 @@ const initialState: GameState = {
 const GameContext = createContext<GameContextType>({
   ...initialState,
   tasks: [],
-  onTap: () => {},
-  onDoubleTap: () => {},
-  onLongPress: () => {},
-  onDrag: () => {},
-  onSwipeRight: () => {},
-  onSwipeLeft: () => {},
-  onPinch: () => {},
-  reset: () => {},
+  actions: {
+    onTap: () => {},
+    onDoubleTap: () => {},
+    onLongPress: () => {},
+    onDrag: () => {},
+    onSwipeRight: () => {},
+    onSwipeLeft: () => {},
+    onPinch: () => {},
+    reset: () => {},
+  },
 });
 
 export function GameProvider({ children }: { children: ReactNode }) {
@@ -229,14 +233,16 @@ export function GameProvider({ children }: { children: ReactNode }) {
       value={{
         ...state,
         tasks,
-        onTap,
-        onDoubleTap,
-        onLongPress,
-        onDrag,
-        onSwipeRight,
-        onSwipeLeft,
-        onPinch,
-        reset,
+        actions: {
+          onTap,
+          onDoubleTap,
+          onLongPress,
+          onDrag,
+          onSwipeRight,
+          onSwipeLeft,
+          onPinch,
+          reset,
+        },
       }}
     >
       {children}
