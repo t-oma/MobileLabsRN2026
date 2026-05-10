@@ -2,10 +2,10 @@ import React from "react";
 import { NavigationContainer } from "@react-navigation/native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/context/ThemeContext";
 import HomeScreen from "@/screens/Home";
 import ChallengesScreen from "@/screens/Challenges";
 import SettingsScreen from "@/screens/Settings";
+import { useTheme } from "@/hooks/useTheme";
 
 const Tab = createBottomTabNavigator();
 

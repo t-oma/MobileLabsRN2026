@@ -1,12 +1,12 @@
 import { Alert } from "react-native";
 import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
-import { useTheme } from "@/context/ThemeContext";
 import { useGame } from "@/context/GameContext";
 import { ScreenContainer } from "@/components/layout/ScreenContainer";
 import { ScreenContent } from "@/components/layout/ScreenContent";
 import { Card } from "@/components/ui/Card";
 import { SectionTitle } from "@/components/ui/SectionTitle";
+import { useTheme } from "@/hooks/useTheme";
 
 const ThemeRow = styled.View`
   flex-direction: row;
@@ -89,7 +89,6 @@ export default function SettingsScreen() {
   const themeOptions = [
     { text: "Світла", value: "light", icon: "sunny-outline" },
     { text: "Темна", value: "dark", icon: "moon-outline" },
-    { text: "Системна", value: "system", icon: "phone-portrait-outline" },
   ] as const;
 
   const aboutRows = [

@@ -1,11 +1,11 @@
 import styled from "styled-components/native";
-import { useTheme } from "@/context/ThemeContext";
 import { useGame } from "@/context/GameContext";
 import { ScreenContainer } from "@/components/layout/ScreenContainer";
 import { ScreenContent } from "@/components/layout/ScreenContent";
 import { IconCircle } from "@/components/ui/IconCircle";
 import { Checkbox } from "@/components/ui/Checkbox";
 import { ProgressBar } from "@/components/ui/ProgressBar";
+import { useTheme } from "@/hooks/useTheme";
 
 const TaskCard = styled.View<{
   bg: string;

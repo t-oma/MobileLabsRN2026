@@ -2,12 +2,12 @@ import styled from "styled-components/native";
 import { Ionicons } from "@expo/vector-icons";
 import { GestureDetector } from "react-native-gesture-handler";
 import Animated from "react-native-reanimated";
-import { useTheme } from "@/context/ThemeContext";
 import { useGame } from "@/context/GameContext";
 import { useClickerGestures } from "@/hooks/useClickerGestures";
 import { ScreenContainer } from "@/components/layout/ScreenContainer";
 import { ScreenContent } from "@/components/layout/ScreenContent";
 import { Card } from "@/components/ui/Card";
+import { useTheme } from "@/hooks/useTheme";
 
 const ScoreCard = styled.View<{ bg: string; border: string }>`
   background-color: ${(props) => props.bg};
