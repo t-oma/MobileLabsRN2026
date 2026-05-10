@@ -41,7 +41,7 @@ const CircleButton = styled(Animated.View)<{ bg: string }>`
   align-items: center;
   justify-content: center;
   align-self: center;
-  margin-vertical: 64px;
+  margin-vertical: 32px;
   shadow-color: #000;
   shadow-opacity: 0.15;
   shadow-radius: 12px;
