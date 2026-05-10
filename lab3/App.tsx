@@ -1,12 +1,28 @@
-import AppNavigator from "@/navigation/AppNavigator";
 import { StatusBar } from "expo-status-bar";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { ThemeProvider } from "@/context/ThemeContext";
+import { GameProvider } from "@/context/GameContext";
+import AppNavigator from "@/navigation/AppNavigator";
+import { StyleSheet } from "react-native";
 
 export default function App() {
   return (
-    <SafeAreaProvider>
-      <AppNavigator />
-      <StatusBar style="auto" />
-    </SafeAreaProvider>
+    <GestureHandlerRootView style={styles.container}>
+      <SafeAreaProvider>
+        <ThemeProvider>
+          <GameProvider>
+            <AppNavigator />
+            <StatusBar style="auto" />
+          </GameProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+});
