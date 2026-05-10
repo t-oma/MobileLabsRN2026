@@ -36,7 +36,7 @@ git clone https://github.com/t-oma/MobileLabsRN2026
 cd lab1
 
 # 2. Встановлення залежностей
-npm install
+npm expo install
 ```
 
 ## Запуск
