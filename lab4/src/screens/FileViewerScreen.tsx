@@ -10,15 +10,22 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
-import { useRoute, RouteProp } from "@react-navigation/native";
+import { useRoute, RouteProp, useNavigation } from "@react-navigation/native";
 import { File } from "expo-file-system";
 import { RootStackParamList } from "@/navigation/AppNavigator";
+import { SafeAreaView } from "react-native-safe-area-context";
+import { NativeStackNavigationProp } from "@react-navigation/native-stack";
 
 type FileViewerRouteProp = RouteProp<RootStackParamList, "FileViewer">;
+type FileViewerNavProp = NativeStackNavigationProp<
+  RootStackParamList,
+  "FileViewer"
+>;
 
 export default function FileViewerScreen() {
   const route = useRoute<FileViewerRouteProp>();
   const { path } = route.params;
+  const navigation = useNavigation<FileViewerNavProp>();
 
   const [content, setContent] = useState("");
   const [loading, setLoading] = useState(true);
@@ -40,10 +47,13 @@ export default function FileViewerScreen() {
 
   const handleSave = async () => {
     setSaving(true);
+
     try {
       const file = new File(path);
       file.write(content);
-      Alert.alert("Успіх", "Файл збережено");
+      Alert.alert("Успіх", "Файл збережено", [
+        { text: "Закрити", onPress: () => navigation.goBack() },
+      ]);
     } catch (e: any) {
       Alert.alert("Помилка", "Не вдалося зберегти файл: " + e.message);
     } finally {
@@ -60,29 +70,31 @@ export default function FileViewerScreen() {
   }
 
   return (
-    <KeyboardAvoidingView
-      style={styles.container}
-      behavior={Platform.OS === "ios" ? "padding" : "height"}
-    >
-      <Text style={styles.fileName}>{path.split("/").pop()}</Text>
-      <TextInput
-        style={styles.input}
-        multiline
-        value={content}
-        onChangeText={setContent}
-        placeholder="Вміст файлу..."
-        textAlignVertical="top"
-      />
-      <TouchableOpacity
-        style={styles.saveButton}
-        onPress={handleSave}
-        disabled={saving}
+    <SafeAreaView style={styles.container} edges={["bottom"]}>
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
-        <Text style={styles.saveButtonText}>
-          {saving ? "Збереження..." : "Зберегти"}
-        </Text>
-      </TouchableOpacity>
-    </KeyboardAvoidingView>
+        <Text style={styles.fileName}>{path.split("/").pop()}</Text>
+        <TextInput
+          style={styles.input}
+          multiline
+          value={content}
+          onChangeText={setContent}
+          placeholder="Вміст файлу..."
+          textAlignVertical="top"
+        />
+        <TouchableOpacity
+          style={styles.saveButton}
+          onPress={handleSave}
+          disabled={saving}
+        >
+          <Text style={styles.saveButtonText}>
+            {saving ? "Збереження..." : "Зберегти"}
+          </Text>
+        </TouchableOpacity>
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
