@@ -21,6 +21,7 @@ import {
 } from "@/utils/fileSystem";
 import FileListItem from "@/components/FileListItem";
 import CreateItemModal from "@/components/CreateItemModal";
+import CreateActionSheet from "@/components/CreateActionSheet";
 import Breadcrumbs from "@/components/Breadcrumbs";
 
 type FileManagerRouteProp = RouteProp<RootStackParamList, "FileManager">;
@@ -44,7 +45,8 @@ export default function FileManagerScreen() {
   const [items, setItems] = useState<FileItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [createModalVisible, setCreateModalVisible] = useState(false);
+  const [actionSheetVisible, setActionSheetVisible] = useState(false);
+  const [createType, setCreateType] = useState<"folder" | "file" | null>(null);
 
   const [totalSpace, setTotalSpace] = useState<number | null>(null);
   const [freeSpace, setFreeSpace] = useState<number | null>(null);
@@ -201,15 +203,23 @@ export default function FileManagerScreen() {
 
       <TouchableOpacity
         style={styles.fab}
-        onPress={() => setCreateModalVisible(true)}
+        onPress={() => setActionSheetVisible(true)}
       >
         <Text style={styles.fabText}>+</Text>
       </TouchableOpacity>
 
+      <CreateActionSheet
+        visible={actionSheetVisible}
+        onClose={() => setActionSheetVisible(false)}
+        onSelectType={(type) => {
+          setCreateType(type);
+        }}
+      />
+
       <CreateItemModal
-        visible={createModalVisible}
-        currentPath={currentDir.uri}
-        onClose={() => setCreateModalVisible(false)}
+        visible={createType !== null}
+        type={createType}
+        onClose={() => setCreateType(null)}
         onCreateFolder={handleCreateFolder}
         onCreateFile={handleCreateFile}
       />
