@@ -176,7 +176,7 @@ export default function FileManagerScreen() {
           </View>
           <View style={styles.statItem}>
             <Text style={styles.statValue}>
-              {usedSpace ? formatSize(usedSpace) : "—"}
+              {usedSpace !== null ? formatSize(usedSpace) : "—"}
             </Text>
             <Text style={styles.statLabel}>Зайнята</Text>
           </View>
