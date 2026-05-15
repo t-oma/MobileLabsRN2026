@@ -16,7 +16,7 @@ import {
   BASE_DIR,
   ensureBaseDir,
   readDirectory,
-  getRelativePath,
+  getBreadcrumb,
   formatSize,
   FileItem,
 } from "@/utils/fileSystem";
@@ -66,7 +66,6 @@ export default function FileManagerScreen() {
     try {
       setTotalSpace(Paths.totalDiskSpace);
       setFreeSpace(Paths.availableDiskSpace);
-      Paths;
     } catch {
       // ignore unsupported platforms
     }
@@ -154,8 +153,9 @@ export default function FileManagerScreen() {
     }
   };
 
-  const relativePath = getRelativePath(currentDir);
-  const usedSpace = totalSpace && freeSpace ? totalSpace - freeSpace : null;
+  const breadcrumbs = getBreadcrumb(currentDir);
+  const usedSpace =
+    totalSpace !== null && freeSpace !== null ? totalSpace - freeSpace : null;
 
   return (
     <View style={styles.container}>
@@ -189,9 +189,38 @@ export default function FileManagerScreen() {
             <Text style={styles.upButtonText}>⬆ Вгору</Text>
           </TouchableOpacity>
         )}
-        <Text style={styles.breadcrumb} numberOfLines={1} ellipsizeMode="head">
-          📂 {relativePath}
-        </Text>
+        <View
+          style={[
+            styles.breadcrumb,
+            { flexDirection: "row", alignItems: "center" },
+          ]}
+        >
+          {breadcrumbs.map((segment, index) => (
+            <View
+              key={segment.uri}
+              style={{ flexDirection: "row", alignItems: "center" }}
+            >
+              {index > 0 && <Text style={styles.breadcrumbSeparator}> / </Text>}
+              <TouchableOpacity
+                onPress={() => {
+                  if (index < breadcrumbs.length - 1) {
+                    setCurrentDir(new Directory(segment.uri));
+                  }
+                }}
+                disabled={index === breadcrumbs.length - 1}
+              >
+                <Text
+                  style={[
+                    styles.breadcrumbSegment,
+                    index === breadcrumbs.length - 1 && styles.breadcrumbActive,
+                  ]}
+                >
+                  {segment.name}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          ))}
+        </View>
       </View>
 
       {loading ? (
@@ -288,8 +317,19 @@ const styles = StyleSheet.create({
   },
   breadcrumb: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  breadcrumbSegment: {
     fontSize: 14,
+    color: "#007AFF",
+  },
+  breadcrumbActive: {
     color: "#555",
+  },
+  breadcrumbSeparator: {
+    fontSize: 14,
+    color: "#999",
   },
   loader: {
     marginTop: 40,

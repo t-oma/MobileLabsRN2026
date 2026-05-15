@@ -42,6 +42,27 @@ export function getRelativePath(dir: Directory): string {
   return dir.uri.replace(BASE_DIR.uri, "") || "Root";
 }
 
+export interface BreadcrumbSegment {
+  name: string;
+  uri: string;
+}
+
+export function getBreadcrumb(dir: Directory): BreadcrumbSegment[] {
+  const relative = dir.uri.replace(BASE_DIR.uri, "");
+  if (!relative) return [{ name: "Root", uri: BASE_DIR.uri }];
+
+  const segments = relative.split("/").filter(Boolean);
+  const result: BreadcrumbSegment[] = [{ name: "Root", uri: BASE_DIR.uri }];
+
+  let currentUri = BASE_DIR.uri;
+  for (const segment of segments) {
+    currentUri = currentUri + segment + "/";
+    result.push({ name: segment, uri: currentUri });
+  }
+
+  return result;
+}
+
 export function formatSize(bytes: number): string {
   if (bytes === 0) return "0 B";
 
