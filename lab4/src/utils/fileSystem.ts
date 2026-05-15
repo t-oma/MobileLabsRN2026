@@ -47,14 +47,17 @@ export interface BreadcrumbSegment {
   uri: string;
 }
 
-export function getBreadcrumb(dir: Directory): BreadcrumbSegment[] {
-  const relative = dir.uri.replace(BASE_DIR.uri, "");
-  if (!relative) return [{ name: "Root", uri: BASE_DIR.uri }];
+export function getBreadcrumb(
+  dir: Directory,
+  base: Directory = BASE_DIR,
+): BreadcrumbSegment[] {
+  const relative = dir.uri.replace(base.uri, "");
+  if (!relative) return [{ name: "Root", uri: base.uri }];
 
   const segments = relative.split("/").filter(Boolean);
-  const result: BreadcrumbSegment[] = [{ name: "Root", uri: BASE_DIR.uri }];
+  const result: BreadcrumbSegment[] = [{ name: "Root", uri: base.uri }];
 
-  let currentUri = BASE_DIR.uri;
+  let currentUri = base.uri;
   for (const segment of segments) {
     currentUri = currentUri + segment + "/";
     result.push({ name: segment, uri: currentUri });

@@ -16,12 +16,12 @@ import {
   BASE_DIR,
   ensureBaseDir,
   readDirectory,
-  getBreadcrumb,
   formatSize,
   FileItem,
 } from "@/utils/fileSystem";
 import FileListItem from "@/components/FileListItem";
 import CreateItemModal from "@/components/CreateItemModal";
+import Breadcrumbs from "@/components/Breadcrumbs";
 
 type FileManagerRouteProp = RouteProp<RootStackParamList, "FileManager">;
 type FileManagerNavProp = NativeStackNavigationProp<
@@ -144,16 +144,6 @@ export default function FileManagerScreen() {
     }
   };
 
-  const goUp = () => {
-    const parent = currentDir.parentDirectory;
-    if (parent.uri === BASE_DIR.uri) {
-      setCurrentDir(BASE_DIR);
-    } else if (currentDir.uri !== BASE_DIR.uri) {
-      setCurrentDir(parent);
-    }
-  };
-
-  const breadcrumbs = getBreadcrumb(currentDir);
   const usedSpace =
     totalSpace !== null && freeSpace !== null ? totalSpace - freeSpace : null;
 
@@ -183,45 +173,11 @@ export default function FileManagerScreen() {
         </View>
       </View>
 
-      <View style={styles.breadcrumbContainer}>
-        {currentDir.uri !== BASE_DIR.uri && (
-          <TouchableOpacity onPress={goUp} style={styles.upButton}>
-            <Text style={styles.upButtonText}>⬆ Вгору</Text>
-          </TouchableOpacity>
-        )}
-        <View
-          style={[
-            styles.breadcrumb,
-            { flexDirection: "row", alignItems: "center" },
-          ]}
-        >
-          {breadcrumbs.map((segment, index) => (
-            <View
-              key={segment.uri}
-              style={{ flexDirection: "row", alignItems: "center" }}
-            >
-              {index > 0 && <Text style={styles.breadcrumbSeparator}> / </Text>}
-              <TouchableOpacity
-                onPress={() => {
-                  if (index < breadcrumbs.length - 1) {
-                    setCurrentDir(new Directory(segment.uri));
-                  }
-                }}
-                disabled={index === breadcrumbs.length - 1}
-              >
-                <Text
-                  style={[
-                    styles.breadcrumbSegment,
-                    index === breadcrumbs.length - 1 && styles.breadcrumbActive,
-                  ]}
-                >
-                  {segment.name}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          ))}
-        </View>
-      </View>
+      <Breadcrumbs
+        base={BASE_DIR}
+        current={currentDir}
+        setCurrent={setCurrentDir}
+      />
 
       {loading ? (
         <ActivityIndicator style={styles.loader} size="large" color="#007AFF" />
@@ -294,42 +250,6 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
     marginTop: 4,
-  },
-  breadcrumbContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 16,
-    paddingVertical: 12,
-    backgroundColor: "#fafafa",
-    borderBottomWidth: 1,
-    borderBottomColor: "#eee",
-  },
-  upButton: {
-    marginRight: 12,
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    backgroundColor: "#e0e0e0",
-    borderRadius: 6,
-  },
-  upButtonText: {
-    fontSize: 14,
-    color: "#333",
-  },
-  breadcrumb: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  breadcrumbSegment: {
-    fontSize: 14,
-    color: "#007AFF",
-  },
-  breadcrumbActive: {
-    color: "#555",
-  },
-  breadcrumbSeparator: {
-    fontSize: 14,
-    color: "#999",
   },
   loader: {
     marginTop: 40,
