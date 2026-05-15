@@ -50,7 +50,7 @@ export default function FileDetailsScreen() {
     );
   }
 
-  const name = path.split('/').pop() ?? '—';
+  const name = path.split('/').filter(Boolean).pop() ?? '—';
   const extension = name.includes('.') ? name.split('.').pop() ?? '—' : '—';
   const typeLabel = isDirectory ? 'Папка' : extension === 'txt' ? 'Текстовий файл' : `Файл (${extension})`;
   const sizeText = isDirectory ? '—' : formatSize(info.size ?? 0);
