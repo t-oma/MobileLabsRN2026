@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useState } from "react";
 import {
   View,
   Text,
@@ -61,6 +61,16 @@ export default function FileViewerScreen() {
     }
   };
 
+  useLayoutEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={handleSave} disabled={saving}>
+          <Text style={styles.saveButtonText}>{saving ? "..." : "Save"}</Text>
+        </TouchableOpacity>
+      ),
+    });
+  }, [navigation, content, saving]);
+
   if (loading) {
     return (
       <View style={styles.center}>
@@ -84,15 +94,6 @@ export default function FileViewerScreen() {
           placeholder="Вміст файлу..."
           textAlignVertical="top"
         />
-        <TouchableOpacity
-          style={styles.saveButton}
-          onPress={handleSave}
-          disabled={saving}
-        >
-          <Text style={styles.saveButtonText}>
-            {saving ? "Збереження..." : "Зберегти"}
-          </Text>
-        </TouchableOpacity>
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
@@ -124,16 +125,9 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: "#fafafa",
   },
-  saveButton: {
-    marginTop: 16,
-    backgroundColor: "#007AFF",
-    paddingVertical: 14,
-    borderRadius: 8,
-    alignItems: "center",
-  },
   saveButtonText: {
-    color: "#fff",
+    color: "#007AFF",
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "400",
   },
 });
