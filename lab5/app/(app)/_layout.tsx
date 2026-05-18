@@ -10,7 +10,8 @@ export default function AppLayout() {
 
   return (
     <Stack screenOptions={{ headerShown: true }}>
-      <Stack.Screen name="index" options={{ title: "Каталог товарів" }} />
+      <Stack.Screen name="index" options={{ title: "Каталог ігор" }} />
+      <Stack.Screen name="details/[id]" options={{ title: "Деталі гри" }} />
     </Stack>
   );
 }
