@@ -1,50 +1,153 @@
-# Welcome to your Expo app 👋
+# Лабораторна робота №5
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Побудова навігації у React Native із використанням бібліотеки Expo Router
 
-## Get started
+## Зміст
 
-1. Install dependencies
+- [Інструкція запуску](#інструкція-запуску)
+- [Опис реалізованого функціоналу](#опис-реалізованого-функціоналу)
+- [Скріншоти роботи застосунку](#скріншоти-роботи-застосунку)
+- [Контрольні запитання](#контрольні-запитання)
+  - [1. Перенаправлення неавторизованого користувача](#1-яким-чином-за-допомогою-expo-router-реалізується-перенаправлення-неавторизованого-користувача)
+  - [2. Різниця між `<Link>` та `router.push()`](#2-у-чому-полягає-різниця-між-використанням-компонента-link-та-метода-routerpush)
+  - [3. Динамічні маршрути та параметри](#3-як-працюють-динамічні-маршрути-в-expo-router-і-як-отримати-передані-параметри)
+  - [4. React Context vs локальний стан](#4-чому-стан-авторизації-доцільно-зберігати-у-глобальному-контексті-react-context-а-не-в-локальному-стані-компонента)
+  - [5. Групи маршрутів](#5-для-чого-використовуються-групи-маршрутів-foldername-і-як-вони-впливають-на-url-адресу)
+- [Автор](#автор)
+
+## Інструкція запуску
+
+### Передумови
+
+- Встановлений [Node.js](https://nodejs.org/) (рекомендовано LTS версію)
+- Мобільний пристрій з додатком **Expo Go** (iOS або Android) або емулятор
+
+### Кроки запуску
+
+1. **Клонування репозиторію** (якщо ще не зроблено):
 
    ```bash
-   npm install
+   git clone https://github.com/t-oma/MobileLabsRN2026
+   cd lab5
    ```
 
-2. Start the app
+2. **Встановлення залежностей**:
+
+   ```bash
+   npm expo install
+   ```
+
+3. **Запуск проєкту**:
 
    ```bash
    npx expo start
    ```
 
-In the output, you'll find options to open the app in a
+   Або скорочений варіант:
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+   ```bash
+   npm start
+   ```
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+4. **Відкриття додатку**:
+   - Скануйте QR-код з терміналу за допомогою **Expo Go**
+   - Або натисніть `i` для запуску на iOS-симуляторі (потрібен macOS + Xcode)
+   - Або натисніть `a` для запуску на Android-емуляторі
 
-## Get a fresh project
+## Опис реалізованого функціоналу
 
-When you're ready, run:
+### 🔐 Авторизація
 
-```bash
-npm run reset-project
+Реалізовано глобальний контекст авторизації (`context/AuthContext.tsx`), який зберігає стан користувача in-memory:
+
+- **Реєстрація** — створення нового облікового запису з валідацією email (`@` обов'язковий) та пароля (мінімум 6 символів).
+- **Вхід** — перевірка облікових даних серед зареєстрованих користувачів.
+- **Вихід** — скидання стану авторизації.
+
+### 🛡️ Захищена навігація
+
+- Публічні екрани розміщено в групі `app/(auth)/` — **Вхід** та **Реєстрація**.
+- Захищені екрани розміщено в групі `app/(app)/` — доступні лише для авторизованих користувачів.
+- Перенаправлення неавторизованого користувача реалізовано через `<Redirect href="/login" />` у `app/(app)/_layout.tsx`.
+
+### 🎮 Каталог ігор
+
+- Відображення списку ігор за допомогою `FlatList`.
+- Кожна картка містить: зображення, назву, жанр, платформу та ціну.
+- Натискання на картку переходить на екран деталей через `<Link asChild>`.
+- Кнопка **Вийти** у верхній частині екрану.
+
+### 📄 Деталі гри
+
+- Динамічний маршрут `app/(app)/details/[id].tsx`.
+- Відображається повна інформація: велике зображення, назва, жанр, платформа, опис та ціна.
+- Кнопка повернення до каталогу.
+
+### ❌ Обробка неіснуючих маршрутів
+
+- Файл `app/+not-found.tsx` відображає дружнє повідомлення про помилку 404 з кнопкою повернення на головну.
+
+## Скріншоти роботи застосунку
+
+### Екран входу
+
+![Login](assets/screenshots/login.png)
+
+### Екран реєстрації
+
+![Register](assets/screenshots/register.png)
+
+### Головний екран (каталог ігор)
+
+![Home](assets/screenshots/home.png)
+
+### Деталі гри
+
+![Details](assets/screenshots/details.png)
+
+### Екран не знайдено (404)
+
+![Not Found](assets/screenshots/not-found.png)
+
+## Контрольні запитання
+
+### 1. Яким чином за допомогою Expo Router реалізується перенаправлення неавторизованого користувача?
+
+Перенаправлення реалізується за допомогою компонента `<Redirect>` з пакету `expo-router`. У файлі захищеного макету (`app/(app)/_layout.tsx`) виконується перевірка стану авторизації (`isAuthenticated`). Якщо користувач не авторизований, компонент повертає `<Redirect href="/login" />`, що автоматично перенаправляє на екран входу без додаткових маніпуляцій з навігацією.
+
+### 2. У чому полягає різниця між використанням компонента `<Link>` та метода `router.push()`?
+
+- **`<Link>`** — декларативний компонент, який використовується в JSX для створення навігаційних посилань (аналог `<a>` у вебі). Зручний для статичних переходів у розмітці, підтримує `asChild` для стилізації дочірніх елементів.
+- **`router.push()`** — імперативний метод, який викликається програмно (наприклад, після успішного входу або валідації форми). Дозволяє динамічно керувати навігацією з логіки компонента, передавати параметри та обробляти результат.
+
+### 3. Як працюють динамічні маршрути в Expo Router і як отримати передані параметри?
+
+Динамічні маршрути створюються за допомогою файлів з квадратними дужками в назві, наприклад `app/(app)/details/[id].tsx`. Параметр `id` передається через URL (`/details/1`). Для отримання параметрів у компоненті використовується хук `useLocalSearchParams()`:
+
+```tsx
+const { id } = useLocalSearchParams<{ id: string }>();
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Цей хук повертає об'єкт з усіма параметрами, переданими в поточний маршрут.
 
-## Learn more
+### 4. Чому стан авторизації доцільно зберігати у глобальному контексті (React Context), а не в локальному стані компонента?
 
-To learn more about developing your project with Expo, look at the following resources:
+- **Глобальна доступність** — стан доступний з будь-якого компонента додатку без необхідності прокидання props через усі рівні дерева.
+- **Єдине джерело правди** — усі компоненти бачать один і той самий стан `isAuthenticated`, що виключає розсинхронізацію.
+- **Захист маршрутів** — макети `_layout.tsx` можуть перевіряти стан без прокидання callbacks або state.
+- **Збереження логіки** — функції `login`, `register`, `logout` інкапсульовані в одному місці та легко перевикористовуються.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+### 5. Для чого використовуються групи маршрутів (folderName) і як вони впливають на URL-адресу?
 
-## Join the community
+Групи маршрутів створюються за допомогою папок з назвами в круглих дужках: `(auth)`, `(app)`. Вони дозволяють:
 
-Join our community of developers creating universal apps.
+- **Організовувати структуру** — групувати логічно пов'язані екрани (публічні vs захищені) без дублювання коду.
+- **Застосовувати спільні макети** — кожна група може мати власний `_layout.tsx` з унікальною логікою (наприклад, перевірка авторизації).
+- **Приховувати сегмент URL** — назва групи в дужках **не включається** в URL-адресу. Наприклад, `app/(auth)/login.tsx` відповідає маршруту `/login`, а не `/(auth)/login`.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## Автор
+
+- **Студент**: Левченко Артем
+- **Група**: ІПЗ-23-3
