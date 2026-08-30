@@ -19,6 +19,7 @@ export type UserProfile = {
 function profileDocument(user: User) {
   const activeUid = auth.currentUser?.uid;
 
+  // Шлях завжди будуємо з активної сесії, а не з UID, введеного в інтерфейсі.
   if (!activeUid || activeUid !== user.uid) {
     throw new FirebaseError(
       "auth/user-mismatch",
