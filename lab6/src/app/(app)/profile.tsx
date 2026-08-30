@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppButton } from "@/components/AppButton";
+import { AppCard } from "@/components/AppCard";
 import { FormField } from "@/components/FormField";
 import { LabMark } from "@/components/LabMark";
 import { LoadingScreen } from "@/components/LoadingScreen";
@@ -194,7 +195,7 @@ export default function ProfileScreen() {
             </View>
           </View>
 
-          <View style={styles.card}>
+          <AppCard elevated>
             <View>
               <Text style={styles.sectionLabel}>АКАУНТ</Text>
               <Text selectable style={styles.email}>
@@ -267,9 +268,9 @@ export default function ProfileScreen() {
                 />
               </>
             )}
-          </View>
+          </AppCard>
 
-          <View style={styles.actionsCard}>
+          <AppCard style={styles.sectionCard}>
             <Text style={styles.sectionTitle}>Безпека акаунта</Text>
             <Text style={styles.sectionHint}>
               Firebase надішле на ваш email посилання для створення нового
@@ -296,9 +297,9 @@ export default function ProfileScreen() {
               title="Вийти"
               variant="secondary"
             />
-          </View>
+          </AppCard>
 
-          <View style={styles.dangerCard}>
+          <AppCard style={styles.sectionCard} tone="danger">
             <Text style={styles.dangerTitle}>Видалення акаунта</Text>
             <Text style={styles.sectionHint}>
               Профіль Firestore і дані Firebase Authentication буде видалено
@@ -309,7 +310,7 @@ export default function ProfileScreen() {
               title="Видалити акаунт"
               variant="danger"
             />
-          </View>
+          </AppCard>
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -391,19 +392,6 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 12,
   },
-  card: {
-    gap: spacing.md,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-    shadowColor: colors.shadow,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.06,
-    shadowRadius: 24,
-    elevation: 2,
-  },
   sectionLabel: {
     color: colors.primary,
     fontSize: 11,
@@ -442,23 +430,8 @@ const styles = StyleSheet.create({
     color: colors.muted,
     fontSize: 14,
   },
-  actionsCard: {
-    gap: spacing.md,
+  sectionCard: {
     marginTop: spacing.md,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
-  },
-  dangerCard: {
-    gap: spacing.md,
-    marginTop: spacing.md,
-    padding: spacing.lg,
-    borderWidth: 1,
-    borderColor: "#F1BCC5",
-    borderRadius: radius.lg,
-    backgroundColor: colors.surface,
   },
   dangerTitle: {
     color: colors.danger,
