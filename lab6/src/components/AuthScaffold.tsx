@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
-import { LabMark } from "@/components/LabMark";
+import { AuthorFooter } from "@/components/AuthorFooter";
 import { colors, radius, spacing } from "@/theme/tokens";
 
 type AuthScaffoldProps = PropsWithChildren<{
@@ -35,8 +35,6 @@ export function AuthScaffold({
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <LabMark />
-
           <View style={styles.heading}>
             <Text style={styles.title}>{title}</Text>
             <Text style={styles.subtitle}>{subtitle}</Text>
@@ -48,6 +46,7 @@ export function AuthScaffold({
           </View>
 
           {footer ? <View style={styles.footer}>{footer}</View> : null}
+          <AuthorFooter style={styles.authorFooter} />
         </ScrollView>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -116,5 +115,9 @@ const styles = StyleSheet.create({
   footer: {
     marginTop: spacing.lg,
     alignItems: "center",
+  },
+  authorFooter: {
+    marginTop: "auto",
+    paddingTop: spacing.xxl,
   },
 });
