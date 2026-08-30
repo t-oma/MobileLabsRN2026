@@ -30,7 +30,7 @@ import {
 import { colors, radius, spacing } from "@/theme/tokens";
 
 export default function ProfileScreen() {
-  const { user, signOut } = useAuth();
+  const { user, sendPasswordReset, signOut } = useAuth();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [city, setCity] = useState("");
@@ -41,7 +41,10 @@ export default function ProfileScreen() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isSendingReset, setIsSendingReset] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [resetError, setResetError] = useState<string | null>(null);
+  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -128,6 +131,26 @@ export default function ProfileScreen() {
     } catch (error) {
       setErrorMessage(getFirebaseErrorMessage(error));
       setIsSigningOut(false);
+    }
+  }
+
+  async function handlePasswordReset() {
+    if (!currentUser.email) {
+      setResetError("У поточного акаунта немає email.");
+      return;
+    }
+
+    setIsSendingReset(true);
+    setResetError(null);
+    setResetSuccess(null);
+
+    try {
+      await sendPasswordReset(currentUser.email);
+      setResetSuccess("Лист для зміни пароля надіслано.");
+    } catch (error) {
+      setResetError(getFirebaseErrorMessage(error));
+    } finally {
+      setIsSendingReset(false);
     }
   }
 
@@ -238,6 +261,22 @@ export default function ProfileScreen() {
           </View>
 
           <View style={styles.actionsCard}>
+            <Text style={styles.sectionTitle}>Безпека акаунта</Text>
+            <Text style={styles.sectionHint}>
+              Firebase надішле на ваш email посилання для створення нового
+              пароля.
+            </Text>
+            <StatusMessage text={resetError} />
+            <StatusMessage text={resetSuccess} tone="success" />
+            <AppButton
+              loading={isSendingReset}
+              onPress={() => void handlePasswordReset()}
+              title="Надіслати лист для зміни пароля"
+              variant="secondary"
+            />
+
+            <View style={styles.divider} />
+
             <Text style={styles.sectionTitle}>Сесія</Text>
             <Text style={styles.sectionHint}>
               Після виходу захищений екран стане недоступним.

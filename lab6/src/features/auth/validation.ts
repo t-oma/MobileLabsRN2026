@@ -71,6 +71,11 @@ export function validateRegistration(
   return errors;
 }
 
+export function validateResetEmail(email: string): LoginFieldErrors {
+  const error = emailError(email);
+  return error ? { email: error } : {};
+}
+
 export function hasFieldErrors(errors: object) {
   return Object.keys(errors).length > 0;
 }

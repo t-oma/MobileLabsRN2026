@@ -90,6 +90,12 @@ export default function LoginScreen() {
         value={password}
       />
 
+      <Link asChild href="/forgot-password">
+        <Pressable hitSlop={8} style={styles.forgotLink}>
+          <Text style={styles.linkText}>Забули пароль?</Text>
+        </Pressable>
+      </Link>
+
       <AppButton
         loading={isSubmitting}
         onPress={() => void handleSignIn()}
@@ -114,5 +120,9 @@ const styles = StyleSheet.create({
     color: colors.primary,
     fontSize: 14,
     fontWeight: "700",
+  },
+  forgotLink: {
+    alignSelf: "flex-end",
+    paddingVertical: 2,
   },
 });
