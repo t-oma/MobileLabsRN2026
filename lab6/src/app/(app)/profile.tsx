@@ -15,6 +15,7 @@ import { FormField } from "@/components/FormField";
 import { LabMark } from "@/components/LabMark";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { StatusMessage } from "@/components/StatusMessage";
+import { DeleteAccountModal } from "@/features/account/DeleteAccountModal";
 import { useAuth } from "@/features/auth/AuthContext";
 import { getFirebaseErrorMessage } from "@/features/auth/firebaseErrorMessage";
 import {
@@ -40,6 +41,7 @@ export default function ProfileScreen() {
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -247,8 +249,27 @@ export default function ProfileScreen() {
               variant="secondary"
             />
           </View>
+
+          <View style={styles.dangerCard}>
+            <Text style={styles.dangerTitle}>Видалення акаунта</Text>
+            <Text style={styles.sectionHint}>
+              Профіль Firestore і дані Firebase Authentication буде видалено
+              назавжди.
+            </Text>
+            <AppButton
+              onPress={() => setIsDeleteModalVisible(true)}
+              title="Видалити акаунт"
+              variant="danger"
+            />
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <DeleteAccountModal
+        onClose={() => setIsDeleteModalVisible(false)}
+        user={currentUser}
+        visible={isDeleteModalVisible}
+      />
     </SafeAreaView>
   );
 }
@@ -381,5 +402,20 @@ const styles = StyleSheet.create({
     borderColor: colors.line,
     borderRadius: radius.lg,
     backgroundColor: colors.surface,
+  },
+  dangerCard: {
+    gap: spacing.md,
+    marginTop: spacing.md,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: "#F1BCC5",
+    borderRadius: radius.lg,
+    backgroundColor: colors.surface,
+  },
+  dangerTitle: {
+    color: colors.danger,
+    fontSize: 20,
+    fontWeight: "800",
+    letterSpacing: -0.3,
   },
 });
