@@ -16,6 +16,7 @@ import { AuthorFooter } from "@/components/AuthorFooter";
 import { FormField } from "@/components/FormField";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { StatusMessage } from "@/components/StatusMessage";
+import { AccountSecurityCard } from "@/features/account/AccountSecurityCard";
 import { DeleteAccountCard } from "@/features/account/DeleteAccountCard";
 import { useAuth } from "@/features/auth/AuthContext";
 import { getFirebaseErrorMessage } from "@/features/auth/firebaseErrorMessage";
@@ -32,7 +33,7 @@ import {
 import { colors, radius, spacing } from "@/theme/tokens";
 
 export default function ProfileScreen() {
-  const { user, sendPasswordReset, signOut } = useAuth();
+  const { user } = useAuth();
   const [name, setName] = useState("");
   const [age, setAge] = useState("");
   const [city, setCity] = useState("");
@@ -43,10 +44,6 @@ export default function ProfileScreen() {
   const [savedProfile, setSavedProfile] = useState<UserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const [isSendingReset, setIsSendingReset] = useState(false);
-  const [resetError, setResetError] = useState<string | null>(null);
-  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (!user) {
@@ -127,38 +124,6 @@ export default function ProfileScreen() {
       setErrorMessage(getFirebaseErrorMessage(error));
     } finally {
       setIsSaving(false);
-    }
-  }
-
-  async function handleSignOut() {
-    setIsSigningOut(true);
-    setErrorMessage(null);
-
-    try {
-      await signOut();
-    } catch (error) {
-      setErrorMessage(getFirebaseErrorMessage(error));
-      setIsSigningOut(false);
-    }
-  }
-
-  async function handlePasswordReset() {
-    if (!currentUser.email) {
-      setResetError("У поточного акаунта немає email.");
-      return;
-    }
-
-    setIsSendingReset(true);
-    setResetError(null);
-    setResetSuccess(null);
-
-    try {
-      await sendPasswordReset(currentUser.email);
-      setResetSuccess("Лист для зміни пароля надіслано.");
-    } catch (error) {
-      setResetError(getFirebaseErrorMessage(error));
-    } finally {
-      setIsSendingReset(false);
     }
   }
 
@@ -267,34 +232,7 @@ export default function ProfileScreen() {
             )}
           </AppCard>
 
-          <AppCard style={styles.sectionCard}>
-            <Text style={styles.sectionTitle}>Безпека акаунта</Text>
-            <Text style={styles.sectionHint}>
-              Firebase надішле на ваш email посилання для створення нового
-              пароля.
-            </Text>
-            <StatusMessage text={resetError} />
-            <StatusMessage text={resetSuccess} tone="success" />
-            <AppButton
-              loading={isSendingReset}
-              onPress={() => void handlePasswordReset()}
-              title="Надіслати лист для зміни пароля"
-              variant="secondary"
-            />
-
-            <View style={styles.divider} />
-
-            <Text style={styles.sectionTitle}>Сесія</Text>
-            <Text style={styles.sectionHint}>
-              Після виходу захищений екран стане недоступним.
-            </Text>
-            <AppButton
-              loading={isSigningOut}
-              onPress={() => void handleSignOut()}
-              title="Вийти"
-              variant="secondary"
-            />
-          </AppCard>
+          <AccountSecurityCard user={currentUser} />
 
           <DeleteAccountCard user={currentUser} />
 
@@ -411,9 +349,6 @@ const styles = StyleSheet.create({
   loadingText: {
     color: colors.muted,
     fontSize: 14,
-  },
-  sectionCard: {
-    marginTop: spacing.md,
   },
   authorFooter: {
     marginTop: spacing.xxl,
