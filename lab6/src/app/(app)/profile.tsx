@@ -16,7 +16,7 @@ import { AuthorFooter } from "@/components/AuthorFooter";
 import { FormField } from "@/components/FormField";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { StatusMessage } from "@/components/StatusMessage";
-import { DeleteAccountModal } from "@/features/account/DeleteAccountModal";
+import { DeleteAccountCard } from "@/features/account/DeleteAccountCard";
 import { useAuth } from "@/features/auth/AuthContext";
 import { getFirebaseErrorMessage } from "@/features/auth/firebaseErrorMessage";
 import {
@@ -45,7 +45,6 @@ export default function ProfileScreen() {
   const [isSaving, setIsSaving] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isSendingReset, setIsSendingReset] = useState(false);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [resetError, setResetError] = useState<string | null>(null);
   const [resetSuccess, setResetSuccess] = useState<string | null>(null);
 
@@ -297,28 +296,11 @@ export default function ProfileScreen() {
             />
           </AppCard>
 
-          <AppCard style={styles.sectionCard} tone="danger">
-            <Text style={styles.dangerTitle}>Видалення акаунта</Text>
-            <Text style={styles.sectionHint}>
-              Профіль Firestore і дані Firebase Authentication буде видалено
-              назавжди.
-            </Text>
-            <AppButton
-              onPress={() => setIsDeleteModalVisible(true)}
-              title="Видалити акаунт"
-              variant="danger"
-            />
-          </AppCard>
+          <DeleteAccountCard user={currentUser} />
 
           <AuthorFooter style={styles.authorFooter} />
         </ScrollView>
       </KeyboardAvoidingView>
-
-      <DeleteAccountModal
-        onClose={() => setIsDeleteModalVisible(false)}
-        user={currentUser}
-        visible={isDeleteModalVisible}
-      />
     </SafeAreaView>
   );
 }
@@ -435,11 +417,5 @@ const styles = StyleSheet.create({
   },
   authorFooter: {
     marginTop: spacing.xxl,
-  },
-  dangerTitle: {
-    color: colors.danger,
-    fontSize: 20,
-    fontWeight: "800",
-    letterSpacing: -0.3,
   },
 });
