@@ -12,8 +12,8 @@ import { SafeAreaView } from "react-native-safe-area-context";
 
 import { AppButton } from "@/components/AppButton";
 import { AppCard } from "@/components/AppCard";
+import { AuthorFooter } from "@/components/AuthorFooter";
 import { FormField } from "@/components/FormField";
-import { LabMark } from "@/components/LabMark";
 import { LoadingScreen } from "@/components/LoadingScreen";
 import { StatusMessage } from "@/components/StatusMessage";
 import { DeleteAccountModal } from "@/features/account/DeleteAccountModal";
@@ -174,8 +174,6 @@ export default function ProfileScreen() {
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
-          <LabMark />
-
           <View style={styles.heading}>
             <Text style={styles.title}>Мій профіль</Text>
             <Text style={styles.subtitle}>
@@ -311,6 +309,8 @@ export default function ProfileScreen() {
               variant="danger"
             />
           </AppCard>
+
+          <AuthorFooter style={styles.authorFooter} />
         </ScrollView>
       </KeyboardAvoidingView>
 
@@ -432,6 +432,9 @@ const styles = StyleSheet.create({
   },
   sectionCard: {
     marginTop: spacing.md,
+  },
+  authorFooter: {
+    marginTop: spacing.xxl,
   },
   dangerTitle: {
     color: colors.danger,
