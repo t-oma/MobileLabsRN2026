@@ -21,6 +21,7 @@ import { getFirebaseErrorMessage } from "@/features/auth/firebaseErrorMessage";
 import {
   getProfile,
   saveProfile,
+  type UserProfile,
 } from "@/features/profile/profileService";
 import {
   normalizeProfile,
@@ -38,6 +39,7 @@ export default function ProfileScreen() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [infoMessage, setInfoMessage] = useState<string | null>(null);
+  const [savedProfile, setSavedProfile] = useState<UserProfile | null>(null);
   const [isLoadingProfile, setIsLoadingProfile] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   const [isSigningOut, setIsSigningOut] = useState(false);
@@ -69,7 +71,9 @@ export default function ProfileScreen() {
           setName(profile.name);
           setAge(String(profile.age));
           setCity(profile.city);
+          setSavedProfile(profile);
         } else {
+          setSavedProfile(null);
           setInfoMessage("Профіль ще не заповнений. Додайте свої дані нижче.");
         }
       } catch (error) {
@@ -95,6 +99,12 @@ export default function ProfileScreen() {
   }
 
   const currentUser = user;
+  const normalizedProfile = normalizeProfile(name, age, city);
+  const hasProfileChanges = savedProfile
+    ? normalizedProfile.name !== savedProfile.name ||
+      normalizedProfile.age !== savedProfile.age ||
+      normalizedProfile.city !== savedProfile.city
+    : name.trim() !== "" || age.trim() !== "" || city.trim() !== "";
 
   async function handleSave() {
     const errors = validateProfile(name, age, city);
@@ -109,10 +119,8 @@ export default function ProfileScreen() {
     setIsSaving(true);
 
     try {
-      await saveProfile(
-        currentUser,
-        normalizeProfile(name, age, city),
-      );
+      await saveProfile(currentUser, normalizedProfile);
+      setSavedProfile(normalizedProfile);
       setInfoMessage(null);
       setSuccessMessage("Профіль збережено.");
     } catch (error) {
@@ -252,6 +260,7 @@ export default function ProfileScreen() {
                 />
 
                 <AppButton
+                  disabled={!hasProfileChanges}
                   loading={isSaving}
                   onPress={() => void handleSave()}
                   title="Зберегти зміни"
