@@ -1,16 +1,11 @@
 import type { User } from "firebase/auth";
-import { useEffect, useState } from "react";
 import { ActivityIndicator, StyleSheet, Text, View } from "react-native";
 
 import { AppButton } from "@/components/AppButton";
 import { AppCard } from "@/components/AppCard";
 import { FormField } from "@/components/FormField";
 import { StatusMessage } from "@/components/StatusMessage";
-import {
-  normalizeProfile,
-  type ProfileFieldErrors,
-  validateProfile,
-} from "@/features/profile/profileValidation";
+import { useProfileForm } from "@/features/profile/useProfileForm";
 import { useProfileStorage } from "@/features/profile/useProfileStorage";
 import { colors, spacing } from "@/theme/tokens";
 
@@ -19,44 +14,22 @@ type ProfileEditorCardProps = {
 };
 
 export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
-  const [name, setName] = useState("");
-  const [age, setAge] = useState("");
-  const [city, setCity] = useState("");
-  const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({});
-  const [formUserUid, setFormUserUid] = useState<string | null>(null);
   const { feedback, profile, save, status } = useProfileStorage(user);
-
-  useEffect(() => {
-    if (status.isLoading || formUserUid === user.uid) {
-      return;
-    }
-
-    setName(profile?.name ?? "");
-    setAge(profile ? String(profile.age) : "");
-    setCity(profile?.city ?? "");
-    setFieldErrors({});
-    setFormUserUid(user.uid);
-  }, [formUserUid, profile, status.isLoading, user.uid]);
-
-  const isLoading = status.isLoading || formUserUid !== user.uid;
-
-  const normalizedProfile = normalizeProfile(name, age, city);
-  const hasProfileChanges = profile
-    ? normalizedProfile.name !== profile.name ||
-      normalizedProfile.age !== profile.age ||
-      normalizedProfile.city !== profile.city
-    : name.trim() !== "" || age.trim() !== "" || city.trim() !== "";
+  const form = useProfileForm({
+    isProfileLoading: status.isLoading,
+    profile,
+    userUid: user.uid,
+  });
 
   async function handleSave() {
-    const errors = validateProfile(name, age, city);
-    setFieldErrors(errors);
     feedback.clearSaveMessages();
+    const nextProfile = form.validate();
 
-    if (Object.keys(errors).length > 0) {
+    if (!nextProfile) {
       return;
     }
 
-    await save(normalizedProfile);
+    await save(nextProfile);
   }
 
   return (
@@ -77,7 +50,7 @@ export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
         </Text>
       </View>
 
-      {isLoading ? (
+      {!form.isReady ? (
         <View style={styles.loadingRow}>
           <ActivityIndicator color={colors.primary} />
           <Text style={styles.loadingText}>Завантажуємо профіль…</Text>
@@ -92,41 +65,41 @@ export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
             autoCapitalize="words"
             autoComplete="name"
             editable={!status.isSaving}
-            error={fieldErrors.name}
+            error={form.fields.name.error}
             label="Ім’я"
-            onChangeText={setName}
+            onChangeText={form.fields.name.onChangeText}
             placeholder="Наприклад, Олена"
             returnKeyType="next"
             textContentType="name"
-            value={name}
+            value={form.fields.name.value}
           />
 
           <FormField
             editable={!status.isSaving}
-            error={fieldErrors.age}
+            error={form.fields.age.error}
             keyboardType="number-pad"
             label="Вік"
             maxLength={3}
-            onChangeText={setAge}
+            onChangeText={form.fields.age.onChangeText}
             placeholder="Наприклад, 20"
             returnKeyType="next"
-            value={age}
+            value={form.fields.age.value}
           />
 
           <FormField
             autoCapitalize="words"
             editable={!status.isSaving}
-            error={fieldErrors.city}
+            error={form.fields.city.error}
             label="Місто"
-            onChangeText={setCity}
+            onChangeText={form.fields.city.onChangeText}
             onSubmitEditing={() => void handleSave()}
             placeholder="Наприклад, Київ"
             returnKeyType="done"
-            value={city}
+            value={form.fields.city.value}
           />
 
           <AppButton
-            disabled={!hasProfileChanges}
+            disabled={!form.hasChanges}
             loading={status.isSaving}
             onPress={() => void handleSave()}
             title="Зберегти зміни"
