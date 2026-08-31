@@ -1,12 +1,10 @@
 import type { User } from "firebase/auth";
-import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 
 import { AppButton } from "@/components/AppButton";
 import { AppCard } from "@/components/AppCard";
 import { StatusMessage } from "@/components/StatusMessage";
-import { useAuth } from "@/features/auth/AuthContext";
-import { getFirebaseErrorMessage } from "@/features/auth/firebaseErrorMessage";
+import { useAccountSecurity } from "@/features/account/useAccountSecurity";
 import { colors, spacing } from "@/theme/tokens";
 
 type AccountSecurityCardProps = {
@@ -14,44 +12,7 @@ type AccountSecurityCardProps = {
 };
 
 export function AccountSecurityCard({ user }: AccountSecurityCardProps) {
-  const { sendPasswordReset, signOut } = useAuth();
-  const [isSendingReset, setIsSendingReset] = useState(false);
-  const [isSigningOut, setIsSigningOut] = useState(false);
-  const [resetError, setResetError] = useState<string | null>(null);
-  const [resetSuccess, setResetSuccess] = useState<string | null>(null);
-  const [signOutError, setSignOutError] = useState<string | null>(null);
-
-  async function handlePasswordReset() {
-    if (!user.email) {
-      setResetError("У поточного акаунта немає email.");
-      return;
-    }
-
-    setIsSendingReset(true);
-    setResetError(null);
-    setResetSuccess(null);
-
-    try {
-      await sendPasswordReset(user.email);
-      setResetSuccess("Лист для зміни пароля надіслано.");
-    } catch (error) {
-      setResetError(getFirebaseErrorMessage(error));
-    } finally {
-      setIsSendingReset(false);
-    }
-  }
-
-  async function handleSignOut() {
-    setIsSigningOut(true);
-    setSignOutError(null);
-
-    try {
-      await signOut();
-    } catch (error) {
-      setSignOutError(getFirebaseErrorMessage(error));
-      setIsSigningOut(false);
-    }
-  }
+  const { passwordReset, session } = useAccountSecurity(user);
 
   return (
     <AppCard style={styles.card}>
@@ -59,11 +20,11 @@ export function AccountSecurityCard({ user }: AccountSecurityCardProps) {
       <Text style={styles.hint}>
         Firebase надішле на ваш email посилання для створення нового пароля.
       </Text>
-      <StatusMessage text={resetError} />
-      <StatusMessage text={resetSuccess} tone="success" />
+      <StatusMessage text={passwordReset.error} />
+      <StatusMessage text={passwordReset.success} tone="success" />
       <AppButton
-        loading={isSendingReset}
-        onPress={() => void handlePasswordReset()}
+        loading={passwordReset.isLoading}
+        onPress={() => void passwordReset.send()}
         title="Надіслати лист для зміни пароля"
         variant="secondary"
       />
@@ -74,10 +35,10 @@ export function AccountSecurityCard({ user }: AccountSecurityCardProps) {
       <Text style={styles.hint}>
         Після виходу захищений екран стане недоступним.
       </Text>
-      <StatusMessage text={signOutError} />
+      <StatusMessage text={session.error} />
       <AppButton
-        loading={isSigningOut}
-        onPress={() => void handleSignOut()}
+        loading={session.isLoading}
+        onPress={() => void session.signOut()}
         title="Вийти"
         variant="secondary"
       />
