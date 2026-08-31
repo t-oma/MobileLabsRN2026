@@ -6,17 +6,12 @@ import { AppButton } from "@/components/AppButton";
 import { AppCard } from "@/components/AppCard";
 import { FormField } from "@/components/FormField";
 import { StatusMessage } from "@/components/StatusMessage";
-import { getFirebaseErrorMessage } from "@/features/auth/firebaseErrorMessage";
-import {
-  getProfile,
-  saveProfile,
-  type UserProfile,
-} from "@/features/profile/profileService";
 import {
   normalizeProfile,
   type ProfileFieldErrors,
   validateProfile,
 } from "@/features/profile/profileValidation";
+import { useProfileStorage } from "@/features/profile/useProfileStorage";
 import { colors, spacing } from "@/theme/tokens";
 
 type ProfileEditorCardProps = {
@@ -28,84 +23,40 @@ export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
   const [age, setAge] = useState("");
   const [city, setCity] = useState("");
   const [fieldErrors, setFieldErrors] = useState<ProfileFieldErrors>({});
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
-  const [infoMessage, setInfoMessage] = useState<string | null>(null);
-  const [savedProfile, setSavedProfile] = useState<UserProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isSaving, setIsSaving] = useState(false);
+  const [formUserUid, setFormUserUid] = useState<string | null>(null);
+  const { feedback, profile, save, status } = useProfileStorage(user);
 
   useEffect(() => {
-    const currentUser = user;
-    let isActive = true;
-
-    async function loadProfile() {
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const profile = await getProfile(currentUser);
-
-        if (!isActive) {
-          return;
-        }
-
-        if (profile) {
-          setName(profile.name);
-          setAge(String(profile.age));
-          setCity(profile.city);
-          setSavedProfile(profile);
-        } else {
-          setSavedProfile(null);
-          setInfoMessage("Профіль ще не заповнений. Додайте свої дані нижче.");
-        }
-      } catch (error) {
-        if (isActive) {
-          setErrorMessage(getFirebaseErrorMessage(error));
-        }
-      } finally {
-        if (isActive) {
-          setIsLoading(false);
-        }
-      }
+    if (status.isLoading || formUserUid === user.uid) {
+      return;
     }
 
-    void loadProfile();
+    setName(profile?.name ?? "");
+    setAge(profile ? String(profile.age) : "");
+    setCity(profile?.city ?? "");
+    setFieldErrors({});
+    setFormUserUid(user.uid);
+  }, [formUserUid, profile, status.isLoading, user.uid]);
 
-    return () => {
-      isActive = false;
-    };
-  }, [user]);
+  const isLoading = status.isLoading || formUserUid !== user.uid;
 
   const normalizedProfile = normalizeProfile(name, age, city);
-  const hasProfileChanges = savedProfile
-    ? normalizedProfile.name !== savedProfile.name ||
-      normalizedProfile.age !== savedProfile.age ||
-      normalizedProfile.city !== savedProfile.city
+  const hasProfileChanges = profile
+    ? normalizedProfile.name !== profile.name ||
+      normalizedProfile.age !== profile.age ||
+      normalizedProfile.city !== profile.city
     : name.trim() !== "" || age.trim() !== "" || city.trim() !== "";
 
   async function handleSave() {
     const errors = validateProfile(name, age, city);
     setFieldErrors(errors);
-    setErrorMessage(null);
-    setSuccessMessage(null);
+    feedback.clearSaveMessages();
 
     if (Object.keys(errors).length > 0) {
       return;
     }
 
-    setIsSaving(true);
-
-    try {
-      await saveProfile(user, normalizedProfile);
-      setSavedProfile(normalizedProfile);
-      setInfoMessage(null);
-      setSuccessMessage("Профіль збережено.");
-    } catch (error) {
-      setErrorMessage(getFirebaseErrorMessage(error));
-    } finally {
-      setIsSaving(false);
-    }
+    await save(normalizedProfile);
   }
 
   return (
@@ -133,14 +84,14 @@ export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
         </View>
       ) : (
         <>
-          <StatusMessage text={errorMessage} />
-          <StatusMessage text={successMessage} tone="success" />
-          <StatusMessage text={infoMessage} tone="info" />
+          <StatusMessage text={feedback.error} />
+          <StatusMessage text={feedback.success} tone="success" />
+          <StatusMessage text={feedback.info} tone="info" />
 
           <FormField
             autoCapitalize="words"
             autoComplete="name"
-            editable={!isSaving}
+            editable={!status.isSaving}
             error={fieldErrors.name}
             label="Ім’я"
             onChangeText={setName}
@@ -151,7 +102,7 @@ export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
           />
 
           <FormField
-            editable={!isSaving}
+            editable={!status.isSaving}
             error={fieldErrors.age}
             keyboardType="number-pad"
             label="Вік"
@@ -164,7 +115,7 @@ export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
 
           <FormField
             autoCapitalize="words"
-            editable={!isSaving}
+            editable={!status.isSaving}
             error={fieldErrors.city}
             label="Місто"
             onChangeText={setCity}
@@ -176,7 +127,7 @@ export function ProfileEditorCard({ user }: ProfileEditorCardProps) {
 
           <AppButton
             disabled={!hasProfileChanges}
-            loading={isSaving}
+            loading={status.isSaving}
             onPress={() => void handleSave()}
             title="Зберегти зміни"
           />
